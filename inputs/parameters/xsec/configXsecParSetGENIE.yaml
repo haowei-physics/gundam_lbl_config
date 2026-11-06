@@ -1,0 +1,299 @@
+####################################################################
+# Cross-section parameters: GENIE (G18_10b_02_11b, GENIE Reweight R-1_04_02)
+####################################################################
+#
+# Inputs produced by the GENIE path of mock_lbl_inputs (scripts/genie/,
+# decision log in src/genie/genie_splines.cxx). The set is used through
+# inputs/parameters/useGENIE.yaml. In short:
+#
+# * Central values: the stock tune. Sigmas: GENIE Reweight defaults (the
+#   GENIE Reweight README says these are not the systematic error of any
+#   tune; a starting point that may change). Diagonal prior, physical units,
+#   from xsecCovGENIE.root (MakeGenieXsecCov.C), same keys as xsecCovHK.root.
+# * 9 spline dials: per-event TGraph with 5 evenly spaced knots at -2..+2
+#   sigma, so catmull-rom with uniformity(1e-6) as for NEUT; the bounds are
+#   the outer knots, so a spline is never extrapolated.
+# * 21 normalisation dials: FakeSelect carries no GENIE interaction mode, so
+#   there is no applyCondition to put on a Norm dial. Each affected event
+#   carries a graph y = x through -1, 0, +1 sigma, built from GENIE's own
+#   calculator, read here as a linear Graph dial (which extrapolates
+#   linearly, so the weight is exactly the parameter value on [0, 1+3 sigma]).
+#   Unaffected events carry an empty graph = no dial.
+# * Names carry a GENIE_ prefix: NEUT's leaves are MaCCQE etc., so a NEUT
+#   config pointed at GENIE data (or the reverse) fails on a missing leaf
+#   instead of silently binding the wrong prior to a graph.
+
+name: "GENIE Cross-Section Parameters"
+isEnabled: true
+enableThrowToyParameters: false
+
+parameterDefinitionFilePath: "${data_dir}/parameters/xsec/xsecCovGENIE.root"
+covarianceMatrix:         xsec_param_cov
+parameterNameList:        xsec_param_names
+parameterPriorValueList:  xsec_param_priors
+parameterLowerBoundsList: xsec_param_lower
+parameterUpperBoundsList: xsec_param_upper
+printDialSetSummary: true
+
+parameterDefinitions:
+
+  # ---------------------------------------------------------------- splines
+
+  # CCQE dipole axial mass [GeV], 0.995 +- 3%
+  - name: "GENIE_MaCCQE"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MaCCQE"
+        applyOnDataSets: [ "HK" ]
+
+  # Fermi-momentum scale for CCQE Pauli suppression, 1 +- 0.3 (one-sided response)
+  # Plain catmull-rom, kept after comparing three interpolations against GENIE
+  # at +-0.5, +-1.5 sigma (numu_x_numu_fhc; largest rate gap over the FHC
+  # samples): catmull-rom 0.177% (overshoot at -0.5 sigma), linear Graph
+  # 0.266%, "catmull-rom, monotonic" 0.346% (both at +0.5/+1.5 sigma). The
+  # per-event response is a step (a blocked event has knots 1, 1, 1, 0, 0), so
+  # no 5-knot interpolation is exact between knots; exact at the knots.
+  # Physical relevance flagged for mentor review: Nieves + LFG applies its own
+  # Pauli blocking, while this dial uses GENIE's generic PauliBlocker.
+  - name: "GENIE_CCQEPauliSupViaKF"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_CCQEPauliSupViaKF"
+        applyOnDataSets: [ "HK" ]
+
+  # Coulomb potential scale in CCQE, 1 +- 0.2
+  - name: "GENIE_CoulombCCQE"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_CoulombCCQE"
+        applyOnDataSets: [ "HK" ]
+
+  # CC RES axial mass [GeV], 1.089 +- 20%
+  - name: "GENIE_MaCCRES"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MaCCRES"
+        applyOnDataSets: [ "HK" ]
+
+  # CC RES vector mass [GeV], 0.84 +- 10%
+  - name: "GENIE_MvCCRES"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MvCCRES"
+        applyOnDataSets: [ "HK" ]
+
+  # NC RES axial mass [GeV], 1.089 +- 20%
+  - name: "GENIE_MaNCRES"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MaNCRES"
+        applyOnDataSets: [ "HK" ]
+
+  # NC RES vector mass [GeV], 0.84 +- 10%
+  - name: "GENIE_MvNCRES"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MvNCRES"
+        applyOnDataSets: [ "HK" ]
+
+  # NC elastic axial mass [GeV], 0.995 +- 25%
+  - name: "GENIE_MaNCEL"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_MaNCEL"
+        applyOnDataSets: [ "HK" ]
+
+  # NC elastic strange axial form factor, 0.12 +- 30%
+  - name: "GENIE_EtaNCEL"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Spline
+        options: catmull-rom, uniformity(1e-6)
+        treeExpression: "GENIE_EtaNCEL"
+        applyOnDataSets: [ "HK" ]
+
+  # --------------------------------------------------------- normalisations
+
+  # CCQE normalisation, sigma +0.20/-0.15 (prior sigma 0.20)
+  - name: "GENIE_NormCCQE"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NormCCQE"
+        applyOnDataSets: [ "HK" ]
+
+  # CC 2p2h normalisation, sigma 0.5
+  - name: "GENIE_NormCCMEC"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NormCCMEC"
+        applyOnDataSets: [ "HK" ]
+
+  # NC 2p2h normalisation, sigma 0.5
+  - name: "GENIE_NormNCMEC"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NormNCMEC"
+        applyOnDataSets: [ "HK" ]
+
+  # CC coherent pi normalisation, sigma 1.0
+  - name: "GENIE_NormCCCOH"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NormCCCOH"
+        applyOnDataSets: [ "HK" ]
+
+  # NC coherent pi normalisation, sigma 1.0
+  - name: "GENIE_NormNCCOH"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NormNCCOH"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vp CC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvpCC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvpCC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vp CC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvpCC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvpCC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vp NC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvpNC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvpNC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vp NC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvpNC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvpNC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vn CC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvnCC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvnCC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vn CC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvnCC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvnCC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vn NC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvnNC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvnNC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vn NC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvnNC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvnNC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarp CC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarpCC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarpCC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarp CC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarpCC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarpCC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarp NC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarpNC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarpNC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarp NC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarpNC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarpNC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarn CC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarnCC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarnCC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarn CC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarnCC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarnCC2pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarn NC 1pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarnNC1pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarnNC1pi"
+        applyOnDataSets: [ "HK" ]
+
+  # non-resonant background, vbarn NC 2pi, sigma 0.5
+  - name: "GENIE_NonRESBGvbarnNC2pi"
+    isEnabled: true
+    dialSetDefinitions:
+      - dialType: Graph
+        treeExpression: "GENIE_NonRESBGvbarnNC2pi"
+        applyOnDataSets: [ "HK" ]

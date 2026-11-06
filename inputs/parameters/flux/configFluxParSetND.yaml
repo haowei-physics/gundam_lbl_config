@@ -5,7 +5,8 @@
 # The same fifty parameters, the same binning, the same names, in the same
 # order as configFluxParSet.yaml. One line differs: the matrix comes from
 # fluxCovHK_ND.root rather than fluxCovHK.root. Both are written by the same
-# MakeFluxCov call in MakeCovariances.C, so they cannot drift apart.
+# MakeFluxCov call (in src/MakeCovariances.C for NEUT, in
+# scripts/genie/make_covariances.sh for GENIE), so they cannot drift apart.
 #
 # The set is deliberately still called "Flux Parameters". These two files are
 # alternatives describing the same physical thing, and an identical set name
@@ -47,8 +48,11 @@
 # with fluxCovHK.root as a bracket on how much the flux systematic costs, not
 # as a measurement of either end.
 #
-# To move s, change the 0.8 passed to MakeFluxCov in MakeCovariances.C and
-# rerun scripts/make_covariances.sh - both files are rewritten.
+# To move s, change the 0.8 passed to MakeFluxCov and rerun the script of your
+# chain; both scripts are in mock_lbl_inputs and rewrite both files:
+#   NEUT   the call in MakeCovariances() in src/MakeCovariances.C, then rerun
+#          scripts/neut/make_covariances.sh
+#   GENIE  the call in scripts/genie/make_covariances.sh, then rerun that script
 # ---------------------------------------------------------------------------
 
 name: "Flux Parameters"

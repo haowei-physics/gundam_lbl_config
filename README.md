@@ -44,6 +44,16 @@ overrides that swap the minimizer. `grid.sh` splits the 3D grid into 51 blocks
 of 1968 nodes with `firstNode`/`nNodes`. The profile points are the 148 files
 in `inputs/profile/`, described in the README there.
 
+## GENIE inputs
+
+To fit with the GENIE cross-section parameters instead of NEUT, set `data_dir`
+to a data_dir made by `mock_lbl_inputs/scripts/genie` and add the override:
+
+    gundamFitter -c config.yaml -of inputs/parameters/useGENIE.yaml
+
+The SLURM scripts are unchanged, so add `-of inputs/parameters/useGENIE.yaml`
+to their gundamFitter line by hand if needed.
+
 ## Analysis
 
     root -l -b -q 'profileGrid.C("outputs/grid/grid_*.root","outputs/grid_profiles.root")'

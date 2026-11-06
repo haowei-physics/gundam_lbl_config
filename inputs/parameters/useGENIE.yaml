@@ -1,0 +1,14 @@
+# Use the GENIE cross-section parameters instead of NEUT:
+#   gundamFitter -c config.yaml -of inputs/parameters/useGENIE.yaml
+# Disables the NEUT "Cross-Section Parameters" set and appends the GENIE set
+# from xsec/configXsecParSetGENIE.yaml. data_dir must point to a GENIE
+# data_dir from mock_lbl_inputs: its trees carry the GENIE_* dial leaves and
+# its parameters/xsec/ holds xsecCovGENIE.root.
+fitterEngineConfig:
+  likelihoodInterfaceConfig:
+    propagatorConfig:
+      parametersManagerConfig:
+        parameterSetList:
+          - name: "Cross-Section Parameters"
+            isEnabled: false
+          - "./inputs/parameters/xsec/configXsecParSetGENIE.yaml"
